@@ -95,7 +95,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)Libaries\glew-2.1.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\vendor\;$(SolutionDir)Libaries\glew-2.1.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -114,7 +114,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)Libaries\glew-2.1.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\vendor\;$(SolutionDir)Libaries\glew-2.1.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,7 +133,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)Libaries\glew-2.1.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\vendor\;$(SolutionDir)Libaries\glew-2.1.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,7 +152,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
-      <AdditionalIncludeDirectories>$(SolutionDir)Libaries\glew-2.1.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)src\vendor\;$(SolutionDir)Libaries\glew-2.1.0\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -164,12 +164,56 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="res\imgui\imgui.cpp" />
+    <ClCompile Include="res\imgui\imgui_demo.cpp" />
+    <ClCompile Include="res\imgui\imgui_draw.cpp" />
+    <ClCompile Include="res\imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="res\imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="res\imgui\imgui_tables.cpp" />
+    <ClCompile Include="res\imgui\imgui_widgets.cpp" />
+    <ClCompile Include="scr\imgui_impl_glfw.cpp" />
+    <ClCompile Include="scr\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="scr\IndexBuffer.cpp" />
     <ClCompile Include="scr\main.cpp" />
+    <ClCompile Include="scr\Renderer.cpp" />
+    <ClCompile Include="scr\Shader.cpp" />
+    <ClCompile Include="scr\Texture.cpp" />
+    <ClCompile Include="scr\vendor\stb_image\stb_image.cpp" />
+    <ClCompile Include="scr\VertexArray.cpp" />
+    <ClCompile Include="scr\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="res\shaders\Basic.shader" />
     <None Include="res\shaders\Mandelbrot.shader" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="res\imgui\imconfig.h" />
+    <ClInclude Include="res\imgui\imgui.h" />
+    <ClInclude Include="res\imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="res\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="res\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="res\imgui\imgui_internal.h" />
+    <ClInclude Include="res\imgui\imstb_rectpack.h" />
+    <ClInclude Include="res\imgui\imstb_textedit.h" />
+    <ClInclude Include="res\imgui\imstb_truetype.h" />
+    <ClInclude Include="scr\imgui_impl_glfw.h" />
+    <ClInclude Include="scr\imgui_impl_opengl3.h" />
+    <ClInclude Include="scr\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="scr\IndexBuffer.h" />
+    <ClInclude Include="scr\Renderer.h" />
+    <ClInclude Include="scr\Shader.h" />
+    <ClInclude Include="scr\Texture.h" />
+    <ClInclude Include="scr\vendor\stb_image\stb_image.h" />
+    <ClInclude Include="scr\VertexArray.h" />
+    <ClInclude Include="scr\VertexBuffer.h" />
+    <ClInclude Include="scr\VertexBufferLayout.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\textures\cherno.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="res\Fonts\Roboto-Regular.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

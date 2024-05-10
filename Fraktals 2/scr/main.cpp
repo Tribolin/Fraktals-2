@@ -11,119 +11,29 @@
 #include "..\res\imgui\imgui_impl_glfw.h"
 #include "..\res\imgui\imgui_impl_opengl3.h"
 
-#ifdef DEBUG
-#define GLCall(x) GLClearError();\
-	x;\
-	ASSERT(GLLogCall(#x,__FILE__,__LINE__))
-#else
-#define GLCall(x) xS
-#endif 
-#define ASSERT(x) if (!(x)) __debugbreak();
+#include "Renderer.h"
 
+#include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "Shader.h"
+#include "Texture.h"
 
-static void GLClearError()
+int main(void)
 {
-	while (glGetError() != GL_NO_ERROR);
-}
+	GLFWwindow* window;
 
-static bool GLLogCall(const char* function, const char* file, int line)
-{
-	while (GLenum error = glGetError())
-	{
-		std::cout << "[OpenGL Error] ("<<error<<"): "<<function<<" "<<file<<":"<<line << std::endl;
-		return false;
-	}
-	return true;
-}
+	if (!glfwInit())
+		return -1;
+	const char* glsl_version = "#version 330";
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
 
-struct ShaderProgrammSource
-{
-	std::string VertexSource;
-	std::string FragmentSource;
-};
-
-static ShaderProgrammSource ParseShader(const std::string& filepath)
-{
-	std::ifstream stream(filepath);
-	if (!stream.is_open())
-	{
-		std::cerr << "ERROR: didn't find shader file";
-	}
-	enum class ShaderType
-	{
-		NONE= -1, Vertex =0, Fragment = 1
-	};
-
-	std::string line;
-	std::stringstream sstream[2];
-	ShaderType type = ShaderType::NONE;
-
-	while (getline(stream,line))
-	{
-		if (line.find("#shader") != std::string::npos)
-		{
-			if (line.find("vertex") != std::string::npos)
-				type = ShaderType::Vertex;
-			else if (line.find("fragment") != std::string::npos)
-				type = ShaderType::Fragment;
-		}
-		else
-		{
-			sstream[(int)type] << line << '\n';
-		}
-	}
-	return{ sstream[0].str(),sstream[1].str() };
-}
-
-static unsigned int CompileShader(const std::string& source, unsigned int type)
-{
-	unsigned int id = glCreateShader(type);
-	const char* src = source.c_str();
-	glShaderSource(id, 1, &src, nullptr);
-	glCompileShader(id);
-
-	int result;
-	glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-
-	if (result == GL_FALSE)
-	{
-		int length;
-		glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-		char* message = (char*)_malloca(length * sizeof(char));
-		glGetShaderInfoLog(id, length, &length, message);
-		std::cout << "Failed to compile Shader!";
-		std::cout << message << std::endl;
-		glDeleteShader(id);
-		return 0;
-	}
-
-	return id;
-}
+	window = glfwCreateWindow(1280, 720, "Version 1.0", NULL, NULL);
 
 
-static unsigned int CreateShader(const std::string& vertexShader, const std::string fragmentShader)
-{
-	unsigned int program = glCreateProgram();
-	unsigned int vs = CompileShader(vertexShader, GL_VERTEX_SHADER);
-	unsigned int fs = CompileShader(fragmentShader, GL_FRAGMENT_SHADER);
-
-	GLCall(glAttachShader(program, vs));
-	GLCall(glAttachShader(program, fs));
-	GLCall(glLinkProgram(program));
-	GLCall(glValidateProgram(program));
-
-	GLCall(glDeleteShader(vs));
-	GLCall(glDeleteShader(fs));
-
-	return program;
-}
-
-int main()
-{
-	glfwInit();
-	
-	
-	GLFWwindow* window = glfwCreateWindow(640, 480, "Version 1.0", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "ERROR 01: Window could not be created";
@@ -133,64 +43,162 @@ int main()
 	glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
+	io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform Windows
+	//io.ConfigViewportsNoAutoMerge = true;
+	//io.ConfigViewportsNoTaskBarIcon = true;
+	
+
+	ImGui::StyleColorsDark();
+	io.Fonts->AddFontFromFileTTF("res/Fonts/Roboto-Regular.ttf", 15.0f);
+
+	
+
+	ImGuiStyle& style = ImGui::GetStyle();
+	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+	{
+		style.WindowRounding = 0.0f;
+		style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+	}
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
+	bool show_demo_window = true;
+	bool show_another_window = false;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
 	glewInit();
 	
-
-	float positions[]{
-		-0.5f,-0.5f,
-		 0.5f, -0.5f,
-		 0.5f,0.5f,
-		 -0.5f, 0.5f,
-	};
-
-	unsigned int indecies[] = {
-		0,1,2,
-		2,3,0
-	};
-
-	unsigned int buffer;
-	GLCall(glGenBuffers(1, &buffer));
-	GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-	GLCall(glBufferData(GL_ARRAY_BUFFER, 2* 4 * sizeof(float), positions, GL_STATIC_DRAW));
-
-	GLCall(glEnableVertexAttribArray(0));
-	GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0));
-
-	unsigned int ibo;
-	GLCall(glGenBuffers(1, &ibo));
-	GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-	GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER,  6 * sizeof(unsigned int), indecies, GL_STATIC_DRAW));
-
-	ShaderProgrammSource source = ParseShader("res/shaders/Basic.shader");
-	
-	unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
-	GLCall(glUseProgram(shader));
-
-	GLCall(int location = glGetUniformLocation(shader , "u_Color"));
-	ASSERT(location != -1); 
-	GLCall(glUniform4f(location, 0.2f, 0.3f, 0.8f, 1.0f));
-	float r = 0.0f;
-	float increment = 0.05f;
-	while (!glfwWindowShouldClose(window))
 	{
-		GLCall(glClear(GL_COLOR_BUFFER_BIT));
+		float positions[]{
+			-0.5f, -0.5f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 1.0f
+		};
+
+		unsigned int indecies[] = {
+			0,1,2,
+			2,3,0
+		};
 		
-		GLCall(glUniform4f(location,r, 0.3f, 0.0f, 1.0f));
-		GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+		GLCall(glEnable(GL_BLEND));
+
+		VertexArray va;
+		VertexBuffer vb(positions, 4 * 4 * sizeof(float));
+		VertexBufferLayout layout;
+
+		layout.Push<float>(2);
+		layout.Push<float>(2);
+		va.AddBuffer(vb, layout);
 		
-		if (r > 1.0f)
+
+		IndexBuffer ib(indecies, 6);
+
+		Shader shader("res/shaders/Basic.shader");
+		shader.Bind();
+		
+		//shader.SetUniform4f("u_Color", 0.2f, 0.3f, 0.8f, 1.0f);
+
+		Texture texture("res/textures/cherno.png");
+		texture.Bind();
+		shader.SetUniform1i("u_Texture",0);
+
+		va.Unbind();
+		vb.Unbind();
+		ib.Unbind();
+		shader.Unbind();
+
+		Renderer renderer;
+
+		float r = 0.0f;
+		float increment = 0.05f;
+
+		
+		while (!glfwWindowShouldClose(window))
 		{
-			increment = -0.05f;
+			renderer.Clear();
+
+			// Start the Dear ImGui frame
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+			
+
+			if (show_demo_window)
+				ImGui::ShowDemoWindow(&show_demo_window);
+
+			// 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
+			{
+				static float f = 0.0f;
+				static int counter = 0;
+
+				ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+				ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+				ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+				ImGui::Checkbox("Another Window", &show_another_window);
+
+				ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+				ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+
+				if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
+					counter++;
+				ImGui::SameLine();
+				ImGui::Text("counter = %d", counter);
+
+				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+				ImGui::End();
+			} 
+
+
+			shader.Bind();
+			//shader.SetUniform4f("u_Color", r, 0.3f, 0.0f, 1.0f);
+			
+
+			va.Bind();
+			ib.Bind();
+
+			
+
+			renderer.Draw(va,ib, shader);
+			
+			ImGui::Render();
+
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+			{
+				GLFWwindow* backup_current_context = glfwGetCurrentContext();
+				ImGui::UpdatePlatformWindows();
+				ImGui::RenderPlatformWindowsDefault();
+				glfwMakeContextCurrent(backup_current_context);
+			}
+
+			if (r > 1.0f)
+			{
+				increment = -0.05f;
+			}
+			else if (r < 0.0f)
+			{
+				increment = 0.05f;
+			}
+			r += increment;
+			GLCall(glfwSwapBuffers(window));
+			GLCall(glfwPollEvents());
 		}
-		else if (r < 0.0f)
-		{
-			increment = 0.05f;
-		}
-		r += increment;
-		GLCall(glfwSwapBuffers(window));
-		GLCall(glfwPollEvents());
+		
 	}
-	glDeleteProgram(shader);
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
 	glfwDestroyWindow(window);
 	glfwTerminate();
 	return 0;

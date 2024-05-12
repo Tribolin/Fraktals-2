@@ -23,6 +23,7 @@ public:
 	//Set uniforms
 	void SetUniform1i(const std::string& name, int v0);
 	void SetUniform1f(const std::string& name, float v0);
+	void SetUniform2f(const std::string& name, float v0, float v1);
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v4);
 private:
 	unsigned int CompileShader(const std::string& source, unsigned int type);

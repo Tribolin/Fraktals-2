@@ -66,6 +66,12 @@
     <ClCompile Include="res\imgui\imgui_widgets.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="scr\Objekt.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="scr\UI.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
@@ -131,6 +137,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="res\imgui\imstb_truetype.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="scr\Objekt.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="scr\UI.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

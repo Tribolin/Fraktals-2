@@ -175,9 +175,11 @@
     <ClCompile Include="scr\imgui_impl_opengl3.cpp" />
     <ClCompile Include="scr\IndexBuffer.cpp" />
     <ClCompile Include="scr\main.cpp" />
+    <ClCompile Include="scr\Objekt.cpp" />
     <ClCompile Include="scr\Renderer.cpp" />
     <ClCompile Include="scr\Shader.cpp" />
     <ClCompile Include="scr\Texture.cpp" />
+    <ClCompile Include="scr\UI.cpp" />
     <ClCompile Include="scr\vendor\stb_image\stb_image.cpp" />
     <ClCompile Include="scr\VertexArray.cpp" />
     <ClCompile Include="scr\VertexBuffer.cpp" />
@@ -201,9 +203,11 @@
     <ClInclude Include="scr\imgui_impl_opengl3.h" />
     <ClInclude Include="scr\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="scr\IndexBuffer.h" />
+    <ClInclude Include="scr\Objekt.h" />
     <ClInclude Include="scr\Renderer.h" />
     <ClInclude Include="scr\Shader.h" />
     <ClInclude Include="scr\Texture.h" />
+    <ClInclude Include="scr\UI.h" />
     <ClInclude Include="scr\vendor\stb_image\stb_image.h" />
     <ClInclude Include="scr\VertexArray.h" />
     <ClInclude Include="scr\VertexBuffer.h" />

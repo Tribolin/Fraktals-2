@@ -10,7 +10,7 @@
 	x;\
 	ASSERT(GLLogCall(#x,__FILE__,__LINE__))
 #else
-#define GLCall(x) xS
+#define GLCall(x) x
 #endif 
 #define ASSERT(x) if (!(x)) __debugbreak();
 

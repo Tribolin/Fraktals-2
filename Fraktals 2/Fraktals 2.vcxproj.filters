@@ -72,11 +72,21 @@
     <ClCompile Include="scr\UI.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="scr\Program.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="scr\Math.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="scr\ProgrammManager.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\Basic.shader" />
     <None Include="packages.config" />
     <None Include="res\shaders\Mandelbrot.shader" />
+    <None Include="res\shaders\ray_marching_test.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scr\Renderer.h">
@@ -143,6 +153,15 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="scr\UI.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="scr\Program.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="scr\Math.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="scr\ProgrammManager.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

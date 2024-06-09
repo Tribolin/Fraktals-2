@@ -1,5 +1,5 @@
 #include "UI.h"
-#include <GLFW/glfw3.h>
+
 
 UI::UI(const char* glsl_version, GLFWwindow* window)
 {
@@ -35,6 +35,8 @@ UI::~UI()
 
 void UI::Render()
 {
+	ImGui::Render();
+
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
@@ -53,7 +55,38 @@ void UI::NewFrame()
 	ImGui::NewFrame();
 }
 
-void UI::Mandelbrot(float& zoomSpeed, float& offsetChangeX, float& offsetChangeY)
+void UI::Manager(int& currentProgramIndex)
+{
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	{
+		ImGui::Begin("Program Selection");
+
+		const char* items[] = { "Mandelbrot", "Koch Schneeflocke", "Ray_marching_test", "Julia-4d" };
+		static const char* current_item = NULL;
+
+		if (ImGui::BeginCombo("Program", items[currentProgramIndex]))
+		{
+			for (int n = 0; n < IM_ARRAYSIZE(items); n++)
+			{
+				bool is_selected = (current_item == items[n]); 
+				if (ImGui::Selectable(items[n], is_selected))
+					currentProgramIndex = n;
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();  
+			}
+			ImGui::EndCombo();
+			
+		}
+		ImGui::End();
+	}
+}
+
+void UI::DemoWindow(bool& show)
+{
+	ImGui::ShowDemoWindow(&show);
+}
+
+void UI::Mandelbrot(float& zoomSpeed, float& offsetChangeX, float& offsetChangeY, int& iter, bool& AntiAli, int& anti_aliasing_iterations)
 {
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
 	{
@@ -62,13 +95,24 @@ void UI::Mandelbrot(float& zoomSpeed, float& offsetChangeX, float& offsetChangeY
 
 				ImGui::Begin("Mandelbrot");                          // Create a window called "Hello, world!" and append into it.
 
-				ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
+				ImGui::Text("This is the Mandelbrot set. It is one of the most famous Fraktals.\n Use the controlles below to explore it.");               // Display some text (you can use a format strings too)
 				//ImGui::Checkbox("UI Test Window", &show_demo_window);      // Edit bools storing our window open/close state
 				//ImGui::Checkbox("cpu", &show_another_window);
 
 				ImGui::SliderFloat("zoom speed", &zoomSpeed, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
 				ImGui::SliderFloat("offsetX", &offsetChangeX, -1.0f, 1.0f);
 				ImGui::SliderFloat("offsetY", &offsetChangeY, -1.0f, 1.0f);
+
+				ImGui::Separator();
+				ImGui::Spacing();
+
+				ImGui::Text("configure Performance");
+				ImGui::SliderInt("Iterations",&iter,0.0f,2000.0f);
+				ImGui::Checkbox("anti aliasing",&AntiAli);
+				if (AntiAli)
+				{
+					ImGui::SliderInt("Strenght", &anti_aliasing_iterations,0,20);
+				}
 				//ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
 				/*if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)

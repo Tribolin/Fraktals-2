@@ -59,18 +59,29 @@ public:
 	virtual void render();
 
 };
-
 class Ray_Marching_Test : public Program
 {
 private:
 	Tex_Fraktal2D Frame;
 	Shader shader;
 	float kw;
-
+	GLFWwindow* window;
 
 public:
-	Ray_Marching_Test(Renderer* ren, UI* Ui, std::string ShaderLocation = "res/shaders/ray_marching_test.shader");
+	Ray_Marching_Test(GLFWwindow* window,Renderer* ren, UI* Ui, std::string ShaderLocation = "res/shaders/ray_marching_test.shader");
 	~Ray_Marching_Test();
 	virtual void render();
 };
 
+class Julia4D:public Program
+{
+private:
+	Tex_Fraktal2D Frame;
+	Shader shader;
+	float kw;
+	GLFWwindow* window;
+public:
+	Julia4D(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation = "res/shaders/Julia4D.shader");
+	~Julia4D();
+	virtual void render();
+};

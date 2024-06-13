@@ -57,7 +57,9 @@ void UI::NewFrame()
 
 void UI::Manager(int& currentProgramIndex)
 {
+
 	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	
 	{
 		ImGui::Begin("Program Selection");
 

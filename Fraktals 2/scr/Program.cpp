@@ -135,8 +135,8 @@ void Koch_Schneeflocke::render()
 	line.Unbind();
 }
 
-Ray_Marching_Test::Ray_Marching_Test(Renderer* ren, UI* Ui, std::string ShaderLocation)
-	:shader(Shader(ShaderLocation)), kw(1)
+Ray_Marching_Test::Ray_Marching_Test(GLFWwindow* window,Renderer* ren, UI* Ui, std::string ShaderLocation)
+	:shader(Shader(ShaderLocation)), kw(1),window(window)
 {
 	renderer = ren;
 	ui = Ui;
@@ -151,10 +151,42 @@ void Ray_Marching_Test::render()
 	shader.Bind();
 
 	//shader.SetUniform1f("focallenght", 1.0 );
+	int height;
+	int width;
+	glfwGetWindowSize(window,&width,&height);
+
+	float ratio = (float)width / (float)height;
+	shader.SetUniform1f("Screensize", ratio);
 
 	Frame.Bind();
 	renderer->Draw(Frame.va, Frame.ib, shader);
 	
 }
 
+Julia4D::Julia4D(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation)
+	: shader(Shader(ShaderLocation)), kw(1), window(window)
+{
+	renderer = ren;
+	ui = Ui;
+}
+Julia4D::~Julia4D()
+{
 
+}
+
+void Julia4D::render()
+{
+	shader.Bind();
+
+	//shader.SetUniform1f("focallenght", 1.0 );
+	int height;
+	int width;
+	glfwGetWindowSize(window, &width, &height);
+
+	float ratio = (float)width / (float)height;
+	shader.SetUniform1f("Screensize", ratio);
+
+	Frame.Bind();
+	renderer->Draw(Frame.va, Frame.ib, shader);
+
+}

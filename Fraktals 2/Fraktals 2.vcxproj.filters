@@ -87,6 +87,7 @@
     <None Include="packages.config" />
     <None Include="res\shaders\Mandelbrot.shader" />
     <None Include="res\shaders\ray_marching_test.shader" />
+    <None Include="res\shaders\Julia4D.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scr\Renderer.h">

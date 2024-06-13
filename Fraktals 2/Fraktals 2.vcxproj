@@ -190,6 +190,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="res\shaders\Basic.shader" />
+    <None Include="res\shaders\Julia4D.shader" />
     <None Include="res\shaders\Mandelbrot.shader" />
     <None Include="res\shaders\ray_marching_test.shader" />
   </ItemGroup>

@@ -128,3 +128,24 @@ void UI::Mandelbrot(float& zoomSpeed, float& offsetChangeX, float& offsetChangeY
 				ImGui::End();
 			} 
 }
+
+void UI::Julia4D(float& C,float& rotationSpeed)
+{
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	{
+
+		static int counter = 0;
+
+		ImGui::Begin("Julia 4D");           
+		ImGui::Value("C1",C);
+		ImGui::SliderFloat("C1",&C,-2,2);
+
+		ImGui::Value("Rotation Speed", rotationSpeed);
+		ImGui::SliderFloat("Speed", &rotationSpeed, 0, 1);
+		
+	
+		
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
+		ImGui::End();
+	}
+}

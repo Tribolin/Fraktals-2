@@ -79,9 +79,11 @@ private:
 	Tex_Fraktal2D Frame;
 	Shader shader;
 	float kw;
+	float rotation ;
 	GLFWwindow* window;
 public:
 	Julia4D(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation = "res/shaders/Julia4D.shader");
 	~Julia4D();
+	
 	virtual void render();
 };

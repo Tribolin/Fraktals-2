@@ -19,7 +19,7 @@ public:
 	void Manager(int& currentProgrammIndex);
 	void DemoWindow(bool& show);
 	void Mandelbrot(float& zoomSpeed, float& offsetChangeX, float& offsetChangeY,int& iter, bool& AntiAli, int& anti_aliasing_iterations);
-	
+	void Julia4D(float& C, float& rotationSpeed);
 
 private:
 	

@@ -168,6 +168,7 @@ Julia4D::Julia4D(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLo
 {
 	renderer = ren;
 	ui = Ui;
+	rotation = 0;
 }
 Julia4D::~Julia4D()
 {
@@ -176,15 +177,23 @@ Julia4D::~Julia4D()
 
 void Julia4D::render()
 {
-	shader.Bind();
 
+	shader.Bind();
+	static float SpeedRotation = 0;
 	//shader.SetUniform1f("focallenght", 1.0 );
 	int height;
 	int width;
 	glfwGetWindowSize(window, &width, &height);
-
+	static float c  = -1;
+	ui->Julia4D(c,SpeedRotation);
 	float ratio = (float)width / (float)height;
 	shader.SetUniform1f("Screensize", ratio);
+	shader.SetUniform4f("C", c, -0.399, 0.339, 0.437);
+
+	rotation+=  SpeedRotation;
+	float radius = 5;
+
+	shader.SetUniform3f("Camerapos",cos(rotation)*radius, sin(rotation)*radius, 0);
 
 	Frame.Bind();
 	renderer->Draw(Frame.va, Frame.ib, shader);

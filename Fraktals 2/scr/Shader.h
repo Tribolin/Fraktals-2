@@ -25,6 +25,7 @@ public:
 
 	void SetUniform1f(const std::string& name, float v0);
 	void SetUniform2f(const std::string& name, float v0, float v1);
+	void SetUniform3f(const std::string& name, float v0, float v1, float v2);
 	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v4);
 private:
 	unsigned int CompileShader(const std::string& source, unsigned int type);

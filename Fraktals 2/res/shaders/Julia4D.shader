@@ -1,4 +1,4 @@
-#shad#shader vertex
+#shader vertex
 #version 330 core
 
 layout(location = 0) in vec4 position;
@@ -19,11 +19,15 @@ layout(location = 0) out vec4 color;
 uniform float Screensize;
 uniform vec4 C;
 uniform vec3 Camerapos;
+uniform float cut;
+uniform samplerCube Texture1;
+
 in vec2 v_TexCoord;
 
 vec3 Sqherepos;
 float focallenght;
 float radius;
+
 
 float mag(vec3 Vect)
 {
@@ -40,10 +44,10 @@ vec4 multiplyQ(vec4 q1,vec4 q2)
 	float j = q1.z;
 	float k = q1.w;
 	
-	float br = q1.x;
-	float bi = q1.y;
-	float bj = q1.z;
-	float bk = q1.w;
+	float br = q2.x;
+	float bi = q2.y;
+	float bj = q2.z;
+	float bk = q2.w;
 
 	return vec4(
 		((r * br) - (i * bi) - (j * bj) - (k * bk)),
@@ -67,35 +71,41 @@ vec3 Normalize(vec3 Vect)
 	return Vect/sqrt(Vect.x*Vect.x+Vect.y*Vect.y+Vect.z*Vect.z);
 }
 
+float iterations = 0;
 float DistanceFunk(vec3 Position,vec4 c)
 {
-	vec3 DistanceVec = Sqherepos-Position;
+	vec3 DistanceVec = Position;
+     float M = mag(DistanceVec);
+	 if(M>4)
+	{
+	 	return M-2;
+	}
 	vec4 Q = vec4(DistanceVec.x,DistanceVec.y,DistanceVec.z,0);
 	// if(Position.y > 0.5)
-	// {
-	// 	return Position.y-0.5;
-	// }
-	vec4 qD = vec4(1.0,0.0,0.0,0.0);
+	//{
+	 //	return Position.y-0.5;
+	//}
+	//vec4 qD = vec4(1.0,0.0,0.0,0.0);
 	
 
 	float md2 = 1.0;
 	float mz2 = dot(Q,Q);
-	float n = 1.0;
+	
 	for(int i = 0;i<100;i++)
 	{
 		 md2 *= 4.0*mz2;
         // z  -> z^2 + c
         Q = multiplyQ(Q,Q) + c;  
 
-        
+        iterations++;
 
         mz2 = qlength2(Q);
         if(mz2>4.0) break;
-        n += 1.0;
+        
 	}
 
 	float distance =  0.25*sqrt(mz2/md2)*log(mz2);
-	return distance;
+	return max(distance,DistanceVec.z - cut);
 }
 vec3 calcNormal( in vec3 p, in vec4 c )
 {
@@ -146,15 +156,21 @@ vec4 Ray(vec3 StartPos,vec3 RayDir,float depth)
 
 void main()
 {
+	float focal = 2;
 	vec3 Up = vec3(0,0,1);
 	vec3 side = Normalize(cross(Up,Camerapos));
-	vec3 Pixelpos = vec3(0,(v_TexCoord.x-0.5)*Screensize,v_TexCoord.y-0.5); 
-	Pixelpos = side *( v_TexCoord.x-0.5)*2 + Up*(v_TexCoord.y-0.5)*2;
+	Up = Normalize(cross(Camerapos,side));
+	if(Up.z <0)
+	{
+		Up *= -1;
+		}
+	
+	vec3 Pixelpos = side *( (v_TexCoord.x-0.5)*focal*Screensize) + Up*((v_TexCoord.y-0.5)*focal);
 	vec3 RayDir = Normalize(Pixelpos-Camerapos);
 	vec3 Position = Camerapos;
 
 
-	float distance = 0.0;
+	float distance = 0;
 	
 	vec4 texColor;
 	
@@ -162,25 +178,55 @@ void main()
 	Position = vec3(RayReturn.x,RayReturn.y,RayReturn.z);
 	distance = RayReturn.w;
 
-	if(Position != Camerapos)
+	if(distance != -1)
 	{
-			vec3 normal = calcNormal( Position,C);
-			vec3 Light = vec3(10,10,10);
+		vec3 normal;
+		vec3 Light = vec3(0,0,10);
+		if(Position.z > -0.001 + cut)
+		{
+				normal = vec3(0,0,1);
+
+				
+
+			
+		}
+		else
+		{
+			normal = calcNormal( Position,C);
+		}	
+			float pi = 3.14159;
+			vec4 QRotateAuroundNormal = vec4(cos(pi/2),sin(pi/2)*normalize(normal));
+			vec4 QRayDir = vec4(0,normalize(RayDir));
+			vec4 bufQ = multiplyQ(QRotateAuroundNormal,QRayDir);
+			QRotateAuroundNormal = vec4(cos(-pi/2),sin(-pi/2)*normalize(normal));
+			vec4 QResult = -multiplyQ(bufQ,QRotateAuroundNormal);
+
+
+
 			
 			RayDir= Normalize(Light-Position);
 			float angle = acos(dot(normal,RayDir)/(mag(normal)*mag(RayDir)));
 			
-			float brighness =1/angle;
-			vec3 MateriaSettings = vec3(1,1,1);
+			float brighness =(-1/pi*angle +2)/(-1/50*iterations+1);
+			vec3 MateriaSettings = vec3(0.9*distance,.9,0.9);
 			
-			texColor = vec4(MateriaSettings*brighness,1);
+			//texColor = vec4(MateriaSettings*brighness,1);
+
+			texColor = texture(Texture1,normalize(QResult.yzw));
+			texColor *= brighness;
+			texColor.x *= MateriaSettings.x;
+			texColor.y *= MateriaSettings.y;
+			texColor.z *= MateriaSettings.z;
+			
+		
 			
 			
+		
 			
 	}
 	else
 		{
-			texColor =  vec4(0,0,0,1);
+			texColor =  texture(Texture1,RayDir);
 		}
 	
 	

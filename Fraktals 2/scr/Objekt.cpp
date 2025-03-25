@@ -52,6 +52,31 @@ Tex_Fraktal2D::~Tex_Fraktal2D()
 {
 }
 
+Box2D::Box2D(Math::Vec2 center, float width)
+{
+	float r = width / 2;
+	float y = center.y;
+	float x = center.x;
+	positions = 
+	{
+		r+x,-r+y,
+		-r+x,-r+y,
+		-r+x,r+y,
+		r+x,r+y
+	};
+	indecies = 
+	{
+		0,1,2,
+		2,3,0
+	};
+	vb.AddData(positions.data(), positions.size() * sizeof(float));
+
+	layout.Push<float>(2);
+
+	va.AddBuffer(vb, layout);
+	ib.AddData(indecies.data(), indecies.size());
+}
+
 Line::Line()
 {
 }

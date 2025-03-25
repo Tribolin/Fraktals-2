@@ -32,10 +32,34 @@ namespace Math
 		double z;
 		Vec3 operator + (Vec3 v2);
 		Vec3 operator - (Vec3 v2);
+		Vec3 operator * (double s);
 		double magnitude();
 		void normalize();
 
 	private:
 
 	};
+	inline Vec3 cross(Vec3 a, Vec3 b)
+	{
+		return Vec3(
+			a.y*b.z-a.z*b.y,
+			a.z * b.x - a.x * b.z,
+			a.x * b.y - a.y * b.x
+		);
+	}
+
+
+	class Quaternion
+	{
+	public:
+		Quaternion(double x,double i, double j, double k);
+		Quaternion(double x, Vec3 vec);
+		~Quaternion();
+		Quaternion operator * (Quaternion b);
+		double r, i, j, k;
+	private:
+
+	};
+
+	
 }

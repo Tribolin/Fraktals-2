@@ -41,6 +41,13 @@ private:
 
 };
 
+class Box2D :public Objekt
+{
+public:
+	Box2D(Math::Vec2 center,float width);
+
+};
+
 class Line : public Objekt
 {
 private:

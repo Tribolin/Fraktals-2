@@ -188,11 +188,17 @@
     <ClCompile Include="scr\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\..\..\AppData\Local\Temp\ultradetaillierte-nebel-abstrakte-tapete-4_1562-749.avif" />
     <None Include="packages.config" />
     <None Include="res\shaders\Basic.shader" />
+    <None Include="res\shaders\Conway.shader" />
+    <None Include="res\shaders\Doppelspalt.shader" />
     <None Include="res\shaders\Julia4D.shader" />
     <None Include="res\shaders\Mandelbrot.shader" />
+    <None Include="res\shaders\orbit.shader" />
+    <None Include="res\shaders\Orbital3D.shader" />
     <None Include="res\shaders\ray_marching_test.shader" />
+    <None Include="res\shaders\Wormhole.shader" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scr\Math.h" />
@@ -223,6 +229,27 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\cherno.png" />
+    <Image Include="res\textures\sky1.png" />
+    <Image Include="res\textures\sky2.png" />
+    <Image Include="res\textures\sky3.png" />
+    <Image Include="res\textures\skybox1\StarSkybox041.png" />
+    <Image Include="res\textures\skybox1\StarSkybox042.png" />
+    <Image Include="res\textures\skybox1\StarSkybox043.png" />
+    <Image Include="res\textures\skybox1\StarSkybox044.png" />
+    <Image Include="res\textures\skybox1\StarSkybox045.png" />
+    <Image Include="res\textures\skybox1\StarSkybox046.png" />
+    <Image Include="res\textures\skybox3\Back_Tex.png" />
+    <Image Include="res\textures\skybox3\Down_Tex.png" />
+    <Image Include="res\textures\skybox3\Front_Tex.png" />
+    <Image Include="res\textures\skybox3\Left_Tex.png" />
+    <Image Include="res\textures\skybox3\Right_Tex.png" />
+    <Image Include="res\textures\skybox3\Up_Tex.png" />
+    <Image Include="res\textures\skybox4\nx.png" />
+    <Image Include="res\textures\skybox4\ny.png" />
+    <Image Include="res\textures\skybox4\nz.png" />
+    <Image Include="res\textures\skybox4\px.png" />
+    <Image Include="res\textures\skybox4\py.png" />
+    <Image Include="res\textures\skybox4\pz.png" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="res\Fonts\Roboto-Regular.ttf" />

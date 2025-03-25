@@ -179,23 +179,250 @@ void Julia4D::render()
 {
 
 	shader.Bind();
-	static float SpeedRotation = 0;
+	 float SpeedRotation = 0;
+	 float UpChange = 0.0;
+
 	//shader.SetUniform1f("focallenght", 1.0 );
 	int height;
 	int width;
 	glfwGetWindowSize(window, &width, &height);
-	static float c  = -1;
-	ui->Julia4D(c,SpeedRotation);
+	static float c1  = -0.5;
+	static float c2 = 0.5;
+	static float c3  = 0.5;
+	static float c4  = -0.5;
+	static float cut = 0;
+
+	/*static CubeMap sky1 = CubeMap({
+		"res/textures/skybox3/Left_Tex.png",
+			"res/textures/skybox3/Right_Tex.png",
+
+			"res/textures/skybox3/Up_Tex.png",
+			"res/textures/skybox3/Down_Tex.png",
+
+
+			"res/textures/skybox3/Front_Tex.png",
+			"res/textures/skybox3/Back_Tex.png",
+		});*/
+	static CubeMap sky1 = CubeMap({
+			"res/textures/skybox4/px.png",
+			"res/textures/skybox4/nx.png",
+
+			"res/textures/skybox4/nz.png",
+			"res/textures/skybox4/pz.png",
+			
+
+			"res/textures/skybox4/py.png",
+			"res/textures/skybox4/ny.png",
+
+
+			
+		}); 
+	sky1.Bind(0);
+	shader.SetUniform1i("Texture1", 0);
+
+	ui->Julia4D(c1,c2,c3,c4,SpeedRotation,UpChange,cut);
 	float ratio = (float)width / (float)height;
 	shader.SetUniform1f("Screensize", ratio);
-	shader.SetUniform4f("C", c, -0.399, 0.339, 0.437);
-
+	shader.SetUniform4f("C", c1, c2,c3, c4);
+	shader.SetUniform1f("cut", cut);
+	
+	static float UpAngle = 0;
+	
+	UpAngle += UpChange/100;
 	rotation+=  SpeedRotation;
-	float radius = 5;
+	float radius = 2;
+	
+	Math::Vec3 base = Math::Vec3(cos(rotation)* radius, sin(rotation)* radius, 0);
+	Math::Vec3 RotationAxis = Math::cross(base,Math::Vec3(0,0,1));
+	Math::Quaternion RotAxis = Math::Quaternion(cos(UpAngle), RotationAxis*sin(UpAngle));
+	Math::Quaternion InverseAxis = Math::Quaternion(cos(-1*UpAngle), RotationAxis * sin(-1*UpAngle));
+	Math::Quaternion qBase = Math::Quaternion(0,base);
+	Math::Quaternion Pos = RotAxis * qBase * InverseAxis;
 
-	shader.SetUniform3f("Camerapos",cos(rotation)*radius, sin(rotation)*radius, 0);
+	shader.SetUniform3f("Camerapos",Pos.i, Pos.j, Pos.k);
 
 	Frame.Bind();
 	renderer->Draw(Frame.va, Frame.ib, shader);
+
+}
+
+
+//Fluid Simulation
+Partikle::Partikle(Math::Vec2 position)
+	:lastPosition(position),position(position)
+{
+}
+
+Partikle::~Partikle()
+{
+}
+FluidSim::FluidSim(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation)
+	: shader(Shader(ShaderLocation)), window(window), PartikelCount(1)
+{
+	
+	renderer = ren;
+	ui = Ui;
+}
+void FluidSim::setup()
+{
+	Time = clock();
+}
+void FluidSim::render()
+{
+	
+	double deltaT = double(clock()-Time)/100000;
+	Time = clock();
+	static float deltaY = 0;
+	static float y = 0;
+	deltaY = deltaY - deltaT * 9.81;
+	
+	if (y < -0.5)
+	{
+		deltaY *=-1;
+	}
+	y += deltaY;
+	shader.Bind();
+	Box2D Box = Box2D({0,y},0.1);
+	
+
+	shader.SetUniform4f("u_Color", 1.0f, 0.0f, 1.0f, 1.f);
+	Box.Bind();
+	renderer->Draw(Box.va, Box.ib, shader);
+	shader.Unbind();
+	Box.Unbind();
+	
+}
+
+//Wormhole
+Wormhole::Wormhole(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation )
+	:shader(ShaderLocation),window(window)
+{
+	renderer = ren;
+	ui = Ui;
+}
+void Wormhole::render()
+{
+	shader.Bind();
+	Frame.Bind();
+	static float a = 0.1;
+	static float M = 0.1;
+	static float l = -5;
+	static float zoom = 1;
+	static float angle = 0;
+	static float x_Offset;
+	ui->Wormhole(a,M, zoom,angle,x_Offset,l);
+
+	static CubeMap sky1 = CubeMap({ 
+		"res/textures/skybox1/StarSkybox041.png",
+			"res/textures/skybox1/StarSkybox042.png",
+			"res/textures/skybox1/StarSkybox043.png",
+			"res/textures/skybox1/StarSkybox044.png",
+			"res/textures/skybox1/StarSkybox045.png",
+			"res/textures/skybox1/StarSkybox046.png"
+		});
+	static CubeMap sky2 = CubeMap(
+		{
+			
+			
+			
+			
+			
+			
+			"res/textures/skybox3/Left_Tex.png",
+			"res/textures/skybox3/Right_Tex.png",
+
+			"res/textures/skybox3/Up_Tex.png",
+			"res/textures/skybox3/Down_Tex.png",
+			
+
+			"res/textures/skybox3/Front_Tex.png",
+			"res/textures/skybox3/Back_Tex.png",
+		
+		});
+	shader.SetUniform1i("Texture1",1);
+	shader.SetUniform1i("Texture2", 1);
+	shader.SetUniform1f("a", a);
+	shader.SetUniform1f("M", M);
+	shader.SetUniform1f("zoom", zoom);
+	shader.SetUniform1f("angle", angle);
+	shader.SetUniform1f("x_Offset", x_Offset);
+	shader.SetUniform1f("CamLenght", l);
+	sky1.Bind(0);
+	sky2.Bind(1);
+
+	
+	renderer->Draw(Frame.va, Frame.ib, shader);
+}
+
+Wormhole::~Wormhole()
+{
+
+}
+
+Orbit::Orbit(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation,std::string ShaderLocation2)
+	:shader(ShaderLocation),shader3d(ShaderLocation2), window(window)
+{
+	renderer = ren;
+	ui = Ui;
+}
+void Orbit::render()
+{
+	Shader* shaderPtr;
+	if (Render3D)
+	{
+		shaderPtr = &shader3d;
+	}
+	else
+	{
+		shaderPtr = &shader;
+	}
+	shaderPtr->Bind();
+	Frame.Bind();
+	ui->Orbit(r,psi,theta,n,l,m,brightness,real,Render3D);
+	shaderPtr->SetUniform1f("CR", r);
+	shaderPtr->SetUniform1f("CPhi", psi);
+	shaderPtr->SetUniform1f("CTheta", theta);
+	shaderPtr->SetUniform1f("brightness", brightness);
+	shaderPtr->SetUniform1i("N",n);
+	shaderPtr->SetUniform1i("L", l);
+	shaderPtr->SetUniform1i("M", m);
+	shaderPtr->SetUniform1i("real", real);
+
+	renderer->Draw(Frame.va, Frame.ib, *shaderPtr);
+}
+Orbit::~Orbit()
+{
+
+}
+
+
+
+Doppelspalt::Doppelspalt(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation)
+	:shader(ShaderLocation), window(window)
+{
+	renderer = ren;
+	ui = Ui;
+}
+void Doppelspalt::render()
+{
+	
+	renderer->Draw(Frame.va, Frame.ib, shader);
+}
+Doppelspalt::~Doppelspalt()
+{
+
+}
+
+ConwayLive::ConwayLive(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation)
+	:shader(ShaderLocation), window(window)
+{
+	renderer = ren;
+	ui = Ui;
+}
+ConwayLive::~ConwayLive()
+{
+}
+void ConwayLive::render()
+{
 
 }

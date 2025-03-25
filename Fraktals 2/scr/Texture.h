@@ -24,3 +24,16 @@ public:
 
 };
 
+class CubeMap
+{
+public:
+	CubeMap(std::vector<std::string> faces);
+	~CubeMap();
+
+	void Bind(unsigned int slot = 0);
+private:
+	int m_Width, m_Height, m_BPP;
+	unsigned int m_RendererID;
+	std::vector<std::string> faces;
+};
+

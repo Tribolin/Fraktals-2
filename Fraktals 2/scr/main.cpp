@@ -37,7 +37,8 @@ int main(void)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
 
-	window = glfwCreateWindow(1280, 720, "Version 1.0", NULL, NULL);
+	window = glfwCreateWindow(1500,800, "Fraktals 2", NULL, NULL);
+	
 
 
 	if (window == NULL)
@@ -66,19 +67,12 @@ int main(void)
 		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 		GLCall(glEnable(GL_BLEND));
 
-		
-		
-		
 
-		/*Texture texture("res/textures/cherno.png");
-		texture.Bind();
-		shader.SetUniform1i("u_Texture",0);*/
 
 
 
 		Renderer renderer;
-		//Mandelbrot mbProgram(&renderer,&ui);
-		//Koch_Schneeflocke mbProgram(&renderer,&ui);
+		
 		ProgrammManager manager(window,glsl_version,&renderer,&ui);
 	
 		manager.run();

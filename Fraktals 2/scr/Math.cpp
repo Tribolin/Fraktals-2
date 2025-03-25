@@ -61,6 +61,11 @@ Vec3 Vec3::operator -(Vec3 v2)
 	return Vec3(x - v2.x, y - v2.y, z + v2.z);
 }
 
+Vec3 Math::Vec3::operator*(double s)
+{
+	return Vec3(x*s,y*s,z*s);
+}
+
 double Vec3::magnitude()
 {
 	return sqrt(x * x + y * y+ z*z);
@@ -74,3 +79,24 @@ void Math::Vec3::normalize()
 	z /= length;
 }
 
+Quaternion::Quaternion(double rr, double ii, double jj, double kk)
+	:r(rr), i(ii), j(jj), k(kk)
+{
+}
+
+Math::Quaternion::Quaternion(double x, Vec3 vec)
+	:r(x),i(vec.x),j(vec.y),k(vec.z)
+{
+}
+
+Quaternion::~Quaternion()
+{
+}
+ Quaternion Quaternion::operator*(Quaternion b)
+{
+	return Quaternion(
+		((r * b.r) - (i * b.i) - (j * b.j) - (k * b.k)),
+		((r * b.i) + (i * b.r) + (j * b.k) - (k * b.j)),
+		((r * b.j) - (i * b.k) + (j * b.r) + (k * b.i)),
+		((r * b.k) + (i * b.j) - (j * b.i) + (k * b.r)));
+}

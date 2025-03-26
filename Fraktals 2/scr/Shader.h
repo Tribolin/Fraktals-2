@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <unordered_map>
+#include <filesystem>
 
 struct ShaderProgrammSource
 {
@@ -33,3 +34,15 @@ private:
 	ShaderProgrammSource ParseShader(const std::string& filepath);
 	int GetUniformLocation(const std::string& name);
 };
+class ComputeShader
+{
+public:
+	ComputeShader(const std::filesystem::path& path);
+	~ComputeShader();
+	void Bind();
+	void Unbind();
+
+private:
+	unsigned int m_RendererID;
+};
+

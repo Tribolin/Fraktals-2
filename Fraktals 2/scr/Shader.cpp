@@ -221,8 +221,21 @@ ComputeShader::~ComputeShader()
 
 void ComputeShader::Bind()
 {
+	GLCall(glUseProgram(m_RendererID));
 }
 
 void ComputeShader::Unbind()
 {
+	GLCall(glUseProgram(0));
+}
+
+void ComputeShader::Dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ)
+{
+	GLCall(glDispatchCompute(numGroupsX, numGroupsY, numGroupsZ));
+	
+}
+
+void ComputeShader::WaitForCompletion()
+{
+	GLCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
 }

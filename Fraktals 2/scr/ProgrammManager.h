@@ -1,7 +1,7 @@
 #pragma once
 #include "Program.h"
 #include "UI.h"
-//
+
 
 class ProgrammManager
 {
@@ -27,8 +27,9 @@ private:
 	Wormhole wormhole = Wormhole(window,renderer,ui);
 	Orbit orbit = Orbit(window,renderer,ui);
 	Doppelspalt doppel = Doppelspalt(window, renderer, ui);
+	ConwayLive conway = ConwayLive(window, renderer, ui);
 
-	std::vector<Program*> ProgramList = { &mandelbrot,&Flocke, &ray_marching_test,&julia4d,&fluid,&wormhole,&orbit,&doppel};
+	std::vector<Program*> ProgramList = { &mandelbrot,&Flocke, &ray_marching_test,&julia4d,&fluid,&wormhole,&orbit,&doppel,&conway};
 	Program* program;
 };
 

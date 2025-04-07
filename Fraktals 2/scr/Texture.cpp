@@ -82,3 +82,76 @@ void CubeMap::Bind(unsigned int slot)
 	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
 	GLCall(glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID));
 }
+
+ComputeTexture::ComputeTexture(int width, int height)
+    :width(width), height(height)
+{
+    GLCall(glCreateTextures(GL_TEXTURE_2D, 1, &m_RendererID));
+
+    GLCall(glTextureStorage2D(m_RendererID, 1, GL_RGBA32F, width, height));
+
+    GLCall(glTextureParameteri(m_RendererID, GL_TEXTURE_MIN_FILTER, GL_NEAREST));
+    GLCall(glTextureParameteri(m_RendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
+
+    GLCall(glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
+    GLCall(glTextureParameteri(m_RendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
+}
+
+ComputeTexture::~ComputeTexture()
+{
+   // GLCall(glDeleteTextures(1, &m_RendererID));
+}
+
+void ComputeTexture::Delete()
+{
+    GLCall(glDeleteTextures(1, &m_RendererID));
+}
+
+
+
+Framebuffer::Framebuffer(const ComputeTexture texture)
+	:ColorAttachment(texture)
+{
+    GLCall(glCreateFramebuffers(1, &m_RendererID));
+
+    if (!AttachTexture(ColorAttachment))
+    {
+        glDeleteFramebuffers(1, &m_RendererID);
+       
+    }
+}
+
+Framebuffer::~Framebuffer()
+{
+	glDeleteFramebuffers(1, &m_RendererID);
+    GLCall(glDeleteTextures(1, &m_RendererID));
+}
+
+void Framebuffer::BlitFramebufferToSwapchain()
+{
+    
+
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, m_RendererID);
+    glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0); // swapchain
+    
+    glBlitFramebuffer(0, 0, ColorAttachment.width, ColorAttachment.height, // Source rect
+        0, 0, ColorAttachment.width, ColorAttachment.height,               // Destination rect
+        GL_COLOR_BUFFER_BIT, GL_NEAREST);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+
+bool Framebuffer::AttachTexture(const ComputeTexture texture)
+{
+    glNamedFramebufferTexture(m_RendererID, GL_COLOR_ATTACHMENT0, texture.m_RendererID, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        //std::cerr << "Framebuffer is not complete!" << std::endl;
+        return false;
+    }
+
+    ColorAttachment = texture;
+    return true;
+}
+

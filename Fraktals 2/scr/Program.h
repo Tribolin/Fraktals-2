@@ -175,10 +175,12 @@ public:
 class ConwayLive :public Program
 {
 	private:
-		Shader shader;
+		ComputeShader shader;
+		Framebuffer framebuffer;
+		ComputeTexture texture;
 		GLFWwindow* window;
 	public:
-		ConwayLive(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation = "res/shaders/Basic.shader");
+		ConwayLive(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation = "res/shaders/Conway.shader");
 		~ConwayLive();
 		virtual void render();
 };

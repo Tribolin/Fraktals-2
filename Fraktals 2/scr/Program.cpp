@@ -367,6 +367,11 @@ Orbit::Orbit(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocati
 }
 void Orbit::render()
 {
+	int height;
+	int width;
+	glfwGetWindowSize(window, &width, &height);
+	glViewport(0, 0, width, height);
+
 	Shader* shaderPtr;
 	if (Render3D)
 	{
@@ -414,7 +419,7 @@ Doppelspalt::~Doppelspalt()
 }
 
 ConwayLive::ConwayLive(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation)
-	:shader(ShaderLocation), window(window)
+	:shader(ShaderLocation), window(window), texture(1, 1), framebuffer(texture)
 {
 	renderer = ren;
 	ui = Ui;
@@ -424,5 +429,24 @@ ConwayLive::~ConwayLive()
 }
 void ConwayLive::render()
 {
+	
+	int height;
+	int width;
+	glfwGetWindowSize(window, &width, &height);
+	texture.Delete();
+	texture = ComputeTexture(width, height);
+	framebuffer.AttachTexture(texture);
+	shader.Bind();
+	GLCall(glBindImageTexture(0, framebuffer.ColorAttachment.m_RendererID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F));
+	const GLuint workGroupSizeX = 16;
+	const GLuint workGroupSizeY = 16;
 
-}
+	GLuint numGroupsX = (width + workGroupSizeX - 1) / workGroupSizeX;
+	GLuint numGroupsY = (height + workGroupSizeY - 1) / workGroupSizeY;
+	shader.Dispatch(numGroupsX, numGroupsY, 1);
+	shader.WaitForCompletion();
+	
+	framebuffer.BlitFramebufferToSwapchain();
+	
+	shader.Unbind();
+}	

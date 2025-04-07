@@ -207,7 +207,7 @@ void main()
 			RayDir= Normalize(Light-Position);
 			float angle = acos(dot(normal,RayDir)/(mag(normal)*mag(RayDir)));
 			
-			float brighness =(-1/pi*angle +2)/(-1/50*iterations+1);
+			float brighness =(-1/pi*angle +2)/(-1/50*iterations+1)/2;
 			vec3 MateriaSettings = vec3(0.9*distance,.9,0.9);
 			
 			//texColor = vec4(MateriaSettings*brighness,1);

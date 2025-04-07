@@ -41,6 +41,8 @@ public:
 	~ComputeShader();
 	void Bind();
 	void Unbind();
+	void Dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ);
+	void WaitForCompletion();
 
 private:
 	unsigned int m_RendererID;

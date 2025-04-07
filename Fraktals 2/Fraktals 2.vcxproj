@@ -189,6 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\..\AppData\Local\Temp\ultradetaillierte-nebel-abstrakte-tapete-4_1562-749.avif" />
+    <None Include="imgui.ini" />
     <None Include="packages.config" />
     <None Include="res\shaders\Basic.shader" />
     <None Include="res\shaders\Conway.shader" />

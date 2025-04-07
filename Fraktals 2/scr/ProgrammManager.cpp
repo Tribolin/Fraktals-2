@@ -19,9 +19,9 @@ bool ProgrammManager::run()
 	while (!glfwWindowShouldClose(window))
 	{
 		renderer->Clear();
+		
 		ui->NewFrame();
 		ui->DemoWindow(show_demo_window);
-
 
 		int lastProgamIndex = currentProgramIndex;
 
@@ -38,10 +38,12 @@ bool ProgrammManager::run()
 		program->render();
 		
 		ui->Render();
+		
 
 
 
 		GLCall(glfwSwapBuffers(window));
+		
 		GLCall(glfwPollEvents());
 	}
 	return true;

@@ -94,6 +94,7 @@
     <None Include="res\shaders\Doppelspalt.shader" />
     <None Include="res\shaders\Orbital3D.shader" />
     <None Include="res\shaders\Conway.shader" />
+    <None Include="imgui.ini" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scr\Renderer.h">

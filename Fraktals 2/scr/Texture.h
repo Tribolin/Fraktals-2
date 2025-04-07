@@ -37,3 +37,29 @@ private:
 	std::vector<std::string> faces;
 };
 
+class ComputeTexture
+{
+public:
+	ComputeTexture(int width,int height);
+	~ComputeTexture();
+	void Delete();
+	GLuint  m_RendererID = 0;
+	int width, height;
+private:
+	
+	
+};
+class Framebuffer
+{
+public:
+	Framebuffer(const ComputeTexture texture);
+	~Framebuffer();
+	void BlitFramebufferToSwapchain();
+	bool AttachTexture(const ComputeTexture texture);
+	ComputeTexture ColorAttachment;
+private:
+	
+	GLuint  m_RendererID = 0;
+};
+
+

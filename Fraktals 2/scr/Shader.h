@@ -44,7 +44,13 @@ public:
 	void Dispatch(unsigned int numGroupsX, unsigned int numGroupsY, unsigned int numGroupsZ);
 	void WaitForCompletion();
 
+	void SetUniform1i(const std::string& name, int v0);
+
+	
+
 private:
 	unsigned int m_RendererID;
+	int GetUniformLocation(const std::string& name);
+	std::unordered_map<std::string, int> m_UniformLoctionCache;
 };
 

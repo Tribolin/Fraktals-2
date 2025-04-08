@@ -2,6 +2,8 @@
 
 layout(rgba32f, binding = 0) uniform  image2D outputImage;
 
+uniform int Run;
+
 layout(local_size_x = 16, local_size_y = 16) in;
 float rand(float x) {
     return fract(sin(x) * 43758.5453123);
@@ -51,7 +53,7 @@ float noise(vec2 p) {
 }
 void main()
 {
-    
+    float pi = 3.14159265359;
     ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
 
     if (pixelCoord.x >= imageSize(outputImage).x || pixelCoord.y >= imageSize(outputImage).y)
@@ -60,11 +62,32 @@ void main()
     ivec2 texSize = imageSize(outputImage);
     vec2 fTexSize = vec2(texSize);
     vec2 normalizedCoord = vec2(pixelCoord) / vec2(texSize);
-   
-    float Col = noise(normalizedCoord*10);
+    vec4 O;
+    
+    if(Run == 0)
+    {
+        float Col = noise(normalizedCoord*10);
+        O = vec4(Col,0,Col,1);
+    }
+    if(Run==1)
+    {
+        O=imageLoad(outputImage, pixelCoord);
+        float sum = 0;
+        int R = 20;
+        for(int i = -R; i < R; i++)
+        {
+            for(int j = -R; j <= R; j++)
+            {
+                if(i == 0 && j == 0)
+                    continue;
+                sum += imageLoad(outputImage, pixelCoord + ivec2(i,j)).x*exp(-pow(length(vec2(i,j))/R,2));
+            }
+        }
+       
         
-    vec4 O = vec4(Col,Col*0.1,Col*0.6,1);
-
-    vec4 color = vec4(1.0,1.0, 0.0, 1.0);
+        O=vec4(exp(-1*(sum-0.14)*(sum-0.14)/(2*0.015*0.015)),0,0,1);
+        
+    }
+   
     imageStore(outputImage, pixelCoord, O);
 }

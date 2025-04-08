@@ -239,3 +239,22 @@ void ComputeShader::WaitForCompletion()
 {
 	GLCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
 }
+
+void ComputeShader::SetUniform1i(const std::string& name, int v0)
+{
+	GLCall(glUniform1i(GetUniformLocation(name), v0));
+}
+
+int ComputeShader::GetUniformLocation(const std::string& name)
+{
+	if (m_UniformLoctionCache.find(name) != m_UniformLoctionCache.end())
+		return m_UniformLoctionCache[name];
+
+	GLCall(int location = glGetUniformLocation(m_RendererID, name.c_str()));
+	if (location == -1) {
+		std::cout << "Warnig: uniform " << name << "' doesn't exist!" << std::endl;
+	}
+	m_UniformLoctionCache[name] = location;
+
+	return location;
+}

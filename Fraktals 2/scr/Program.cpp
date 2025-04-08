@@ -421,23 +421,39 @@ Doppelspalt::~Doppelspalt()
 ConwayLive::ConwayLive(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation)
 	:shader(ShaderLocation), window(window), texture(1, 1), framebuffer(texture)
 {
+	int height;
+	int width;
 	renderer = ren;
 	ui = Ui;
+	
 }
 ConwayLive::~ConwayLive()
 {
 }
 void ConwayLive::render()
 {
-	
 	int height;
 	int width;
 	glfwGetWindowSize(window, &width, &height);
-	texture.Delete();
-	texture = ComputeTexture(width, height);
-	framebuffer.AttachTexture(texture);
 	shader.Bind();
+	if (width != texture.width || height != texture.height)
+	{
+		texture.Delete();
+		texture = ComputeTexture(width, height);
+		framebuffer.AttachTexture(texture);
+		
+		shader.SetUniform1i("Run", 0);
+	}
+	else
+	{
+		
+		shader.SetUniform1i("Run", 1);
+	}
 	GLCall(glBindImageTexture(0, framebuffer.ColorAttachment.m_RendererID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F));
+	
+	
+
+	
 	const GLuint workGroupSizeX = 16;
 	const GLuint workGroupSizeY = 16;
 
@@ -448,5 +464,5 @@ void ConwayLive::render()
 	
 	framebuffer.BlitFramebufferToSwapchain();
 	
-	shader.Unbind();
+	
 }	

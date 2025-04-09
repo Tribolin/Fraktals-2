@@ -419,7 +419,7 @@ Doppelspalt::~Doppelspalt()
 }
 
 ConwayLive::ConwayLive(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation)
-	:shader(ShaderLocation), window(window), texture(1, 1), framebuffer(texture)
+	:shader(ShaderLocation), window(window), texture(1, 1), framebuffer(texture), texture2(1, 1), AktiveTexture(false)
 {
 	int height;
 	int width;
@@ -432,6 +432,8 @@ ConwayLive::~ConwayLive()
 }
 void ConwayLive::render()
 {
+
+
 	int height;
 	int width;
 	glfwGetWindowSize(window, &width, &height);
@@ -439,8 +441,10 @@ void ConwayLive::render()
 	if (width != texture.width || height != texture.height)
 	{
 		texture.Delete();
+		texture2.Delete();
 		texture = ComputeTexture(width, height);
-		framebuffer.AttachTexture(texture);
+		texture2 = ComputeTexture(width, height);
+		
 		
 		shader.SetUniform1i("Run", 0);
 	}
@@ -449,13 +453,25 @@ void ConwayLive::render()
 		
 		shader.SetUniform1i("Run", 1);
 	}
+	if (AktiveTexture)
+	{
+		framebuffer.AttachTexture(texture);
+		GLCall(glBindImageTexture(1, texture2.m_RendererID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F));
+		AktiveTexture = false;
+	}
+	else
+	{
+		framebuffer.AttachTexture(texture2);
+		GLCall(glBindImageTexture(1, texture.m_RendererID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F));
+		AktiveTexture = true;
+	}
 	GLCall(glBindImageTexture(0, framebuffer.ColorAttachment.m_RendererID, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F));
 	
 	
 
 	
-	const GLuint workGroupSizeX = 16;
-	const GLuint workGroupSizeY = 16;
+	const GLuint workGroupSizeX = 20;
+	const GLuint workGroupSizeY = 20;
 
 	GLuint numGroupsX = (width + workGroupSizeX - 1) / workGroupSizeX;
 	GLuint numGroupsY = (height + workGroupSizeY - 1) / workGroupSizeY;

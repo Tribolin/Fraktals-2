@@ -178,7 +178,9 @@ class ConwayLive :public Program
 		ComputeShader shader;
 		Framebuffer framebuffer;
 		ComputeTexture texture;
+		ComputeTexture texture2;
 		GLFWwindow* window;
+		bool AktiveTexture;
 	public:
 		ConwayLive(GLFWwindow* window, Renderer* ren, UI* Ui, std::string ShaderLocation = "res/shaders/Conway.shader");
 		~ConwayLive();

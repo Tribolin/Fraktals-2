@@ -1,10 +1,11 @@
 #version 460 core
 
 layout(rgba32f, binding = 0) uniform  image2D outputImage;
+layout(rgba32f, binding = 1) uniform  image2D inputImage;
 
 uniform int Run;
 
-layout(local_size_x = 16, local_size_y = 16) in;
+layout(local_size_x = 20, local_size_y = 20) in;
 float rand(float x) {
     return fract(sin(x) * 43758.5453123);
 }
@@ -15,7 +16,7 @@ vec2 randomGradient(vec2 co){
 float interpolate(float a0, float a1, float x)
 {
     float g; // Gewicht für die Interpolation
-    //g = x; // lineare Interpolation; ergibt stetiges, aber nicht differenzierbares Rauschen
+ 
     g = (3.0 - x * 2.0) * x * x; // kubische Interpolation mit dem Polynom 3 * x^2 - 2 * x^3
     //g = ((x * (x * 6.0 - 15.0) + 10.0) * x * x * x); // Interpolation mit dem Polynom 6 * x^5 - 15 * x^4 + 10 * x^3
     return (a1 - a0) * g + a0;
@@ -51,6 +52,19 @@ float noise(vec2 p) {
 
     return interpolate(ix0, ix1, sy);
 }
+
+float delta(float n,float mu,float sigma)
+{
+    float l = abs(n-mu);
+    float k = 2*sigma*sigma;
+    return 2*exp(-(l*l)/k)- 1;
+}
+float Kernel(float u)
+{
+    float mu = 0.5;
+    float sigma = 0.15;
+    return exp(-(u-mu)*(u-mu)/(2*sigma*sigma));
+}
 void main()
 {
     float pi = 3.14159265359;
@@ -71,21 +85,40 @@ void main()
     }
     if(Run==1)
     {
-        O=imageLoad(outputImage, pixelCoord);
+        
         float sum = 0;
-        int R = 20;
+        float KernelSum = 0;
+        int R = 10;
         for(int i = -R; i < R; i++)
         {
             for(int j = -R; j <= R; j++)
             {
                 if(i == 0 && j == 0)
                     continue;
-                sum += imageLoad(outputImage, pixelCoord + ivec2(i,j)).x*exp(-pow(length(vec2(i,j))/R,2));
+                
+
+                
+               
+                float f=  imageLoad(inputImage, pixelCoord + ivec2(i,j)).x;
+                float u = length(vec2(i,j))/15.;
+                if(f > 0.5)
+                {
+                    f=0.5;
+                }
+                if(u > 1)
+                    continue;
+                sum+= f*Kernel(u);
+                KernelSum+=Kernel(u);
+                
+                
             }
         }
-       
-        
-        O=vec4(exp(-1*(sum-0.14)*(sum-0.14)/(2*0.015*0.015)),0,0,1);
+        sum/=KernelSum;
+        float Sigma = 0.014;//0.015
+        float mu = 0.14;//0.14
+        float deltaCol = delta(sum,mu,Sigma)*0.05;
+        float Col = clamp(imageLoad(inputImage, pixelCoord).x + deltaCol,0.,1.);
+        O=vec4(Col,Col,Col,1);
         
     }
    

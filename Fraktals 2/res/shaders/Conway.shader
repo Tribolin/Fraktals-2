@@ -1,126 +1,154 @@
 #version 460 core
 
-layout(rgba32f, binding = 0) uniform  image2D outputImage;
-layout(rgba32f, binding = 1) uniform  image2D inputImage;
+layout(rgba32f, binding = 0) uniform image2D outputImage;
+layout(rgba32f, binding = 1) uniform image2D inputImage;
+
+layout(local_size_x = 20, local_size_y = 20) in;
 
 uniform int Run;
 
-layout(local_size_x = 20, local_size_y = 20) in;
-float rand(float x) {
-    return fract(sin(x) * 43758.5453123);
+const int R = 10;
+const float T = 10.;
+const float dt = 1. / T;
+
+const vec4 beta1 = vec4(1./4., 1., 0., 0.);
+const float betaLen1 = 2.;
+const float mu1 = 0.16;
+const float sigma1 = 0.025;
+const float eta1 = 0.666;
+
+const vec4 beta2 = vec4(1., 3./4., 3./4., 0.);
+const float betaLen2 = 3.;
+const float mu2 = 0.22;
+const float sigma2 = 0.042;
+const float eta2 = 0.666;
+
+const vec4 beta3 = vec4(1., 0., 0., 0.);
+const float betaLen3 = 1.;
+const float mu3 = 0.28;
+const float sigma3 = 0.025;
+const float eta3 = 0.666;
+
+const float rho = 0.5;
+const float omega = 0.15;
+const float base_noise = 0.15;
+
+float Bell(float x, float mu, float sigma)
+{
+    return exp(-(x - mu)*(x - mu) / (2. * sigma * sigma));
 }
-vec2 randomGradient(vec2 co){
-    float random =  fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453)*2*3.14159265359;
-    return vec2(cos(random),sin(random));
+
+float delta(float n, float mu, float sigma)
+{
+    return 2. * Bell(n, mu, sigma) - 1.;
 }
+
+float Kernel(float r, float betaLen, vec4 beta)
+{
+    if (r > 1.) return 0.;
+    float Br = r * betaLen;
+    float height = beta[int(Br)];
+    return height * Bell(mod(Br, 1.), rho, omega);
+}
+
+// Perlin noise (same as before)
+vec2 randomGradient(vec2 co)
+{
+    float random = fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453) * 6.2831853;
+    return vec2(cos(random), sin(random));
+}
+
 float interpolate(float a0, float a1, float x)
 {
-    float g; // Gewicht für die Interpolation
- 
-    g = (3.0 - x * 2.0) * x * x; // kubische Interpolation mit dem Polynom 3 * x^2 - 2 * x^3
-    //g = ((x * (x * 6.0 - 15.0) + 10.0) * x * x * x); // Interpolation mit dem Polynom 6 * x^5 - 15 * x^4 + 10 * x^3
+    float g = (3.0 - x * 2.0) * x * x;
     return (a1 - a0) * g + a0;
 }
+
 float dotGridGradient(int ix, int iy, float x, float y)
 {
     vec2 grad = randomGradient(vec2(ix, iy));
-    // Berechne den Abstandsvektor:
-    float dx = x -  ix;
-    float dy = y -  iy;
-    return dx * grad.x + dy * grad.y; // Skalarprodukt
+    float dx = x - float(ix);
+    float dy = y - float(iy);
+    return dx * grad.x + dy * grad.y;
 }
-float noise(vec2 p) {
-    float x = p.x;
-    float y = p.y;
-    int x0 =  int(floor(x));
+
+float noise(vec2 p)
+{
+    int x0 = int(floor(p.x));
     int x1 = x0 + 1;
-    int y0 =  int(floor(y));
+    int y0 = int(floor(p.y));
     int y1 = y0 + 1;
 
-    // Bestimme die Abstände von den Gitterpunkten für die Interpolation:
-    float sx = x - x0;
-    float sy = y - y0;
+    float sx = p.x - float(x0);
+    float sy = p.y - float(y0);
 
-    // Interpoliere zwischen den Skalarprodukten an den vier Ecken:
-    float n0, n1, ix0, ix1;
-    n0 = dotGridGradient(x0, y0, x, y);
-    n1 = dotGridGradient(x1, y0, x, y);
-    ix0 = interpolate(n0, n1, sx);
-    n0 = dotGridGradient(x0, y1, x, y);
-    n1 = dotGridGradient(x1, y1, x, y);
-    ix1 = interpolate(n0, n1, sx);
+    float n0 = dotGridGradient(x0, y0, p.x, p.y);
+    float n1 = dotGridGradient(x1, y0, p.x, p.y);
+    float ix0 = interpolate(n0, n1, sx);
+
+    n0 = dotGridGradient(x0, y1, p.x, p.y);
+    n1 = dotGridGradient(x1, y1, p.x, p.y);
+    float ix1 = interpolate(n0, n1, sx);
 
     return interpolate(ix0, ix1, sy);
 }
 
-float delta(float n,float mu,float sigma)
-{
-    float l = abs(n-mu);
-    float k = 2*sigma*sigma;
-    return 2*exp(-(l*l)/k)- 1;
-}
-float Kernel(float u)
-{
-    float mu = 0.5;
-    float sigma = 0.15;
-    return exp(-(u-mu)*(u-mu)/(2*sigma*sigma));
-}
 void main()
 {
-    float pi = 3.14159265359;
     ivec2 pixelCoord = ivec2(gl_GlobalInvocationID.xy);
-
-    if (pixelCoord.x >= imageSize(outputImage).x || pixelCoord.y >= imageSize(outputImage).y)
-		return;
-
     ivec2 texSize = imageSize(outputImage);
-    vec2 fTexSize = vec2(texSize);
+
+    if (pixelCoord.x >= texSize.x || pixelCoord.y >= texSize.y)
+        return;
+
     vec2 normalizedCoord = vec2(pixelCoord) / vec2(texSize);
     vec4 O;
-    
-    if(Run == 0)
-    {
-        float Col = noise(normalizedCoord*10);
-        O = vec4(Col,0,Col,1);
-    }
-    if(Run==1)
-    {
-        
-        float sum = 0;
-        float KernelSum = 0;
-        int R = 10;
-        for(int i = -R; i < R; i++)
-        {
-            for(int j = -R; j <= R; j++)
-            {
-                if(i == 0 && j == 0)
-                    continue;
-                
 
-                
-               
-                float f=  imageLoad(inputImage, pixelCoord + ivec2(i,j)).x;
-                float u = length(vec2(i,j))/15.;
-                if(f > 0.5)
-                {
-                    f=0.5;
-                }
-                if(u > 1)
-                    continue;
-                sum+= f*Kernel(u);
-                KernelSum+=Kernel(u);
-                
-                
+    if (Run == 0)
+    {
+        float Col = base_noise + noise(normalizedCoord * 50.0);
+        O = vec4(Col, Col, Col, 1.0);
+    }
+    else if (Run == 1)
+    {
+        float sum1 = 0., KernelSum1 = 0.;
+        float sum2 = 0., KernelSum2 = 0.;
+        float sum3 = 0., KernelSum3 = 0.;
+
+        for (int i = -R; i <= R; ++i)
+        {
+            for (int j = -R; j <= R; ++j)
+            {
+                ivec2 offset = ivec2(i, j);
+                ivec2 wrappedCoord = ivec2(mod(vec2(pixelCoord + offset), vec2(texSize)));
+
+                float val = imageLoad(inputImage, wrappedCoord).x;
+                float u = length(vec2(i, j)) / float(R);
+
+                float w1 = Kernel(u, betaLen1, beta1);
+                float w2 = Kernel(u, betaLen2, beta2);
+                float w3 = Kernel(u, betaLen3, beta3);
+
+                sum1 += val * w1; KernelSum1 += w1;
+                sum2 += val * w2; KernelSum2 += w2;
+                sum3 += val * w3; KernelSum3 += w3;
             }
         }
-        sum/=KernelSum;
-        float Sigma = 0.014;//0.015
-        float mu = 0.14;//0.14
-        float deltaCol = delta(sum,mu,Sigma)*0.05;
-        float Col = clamp(imageLoad(inputImage, pixelCoord).x + deltaCol,0.,1.);
-        O=vec4(Col,Col,Col,1);
-        
+
+        float avg1 = sum1 / KernelSum1;
+        float avg2 = sum2 / KernelSum2;
+        float avg3 = sum3 / KernelSum3;
+
+        float growth1 = delta(avg1, mu1, sigma1);
+        float growth2 = delta(avg2, mu2, sigma2);
+        float growth3 = delta(avg3, mu3, sigma3);
+
+        float growth = growth1 * eta1 + growth2 * eta2 + growth3 * eta3;
+
+        float val = imageLoad(inputImage, pixelCoord).x;
+        float Col = clamp(dt * growth + val, 0.0, 1.0);
+        O = vec4(Col, Col, Col, 1.0);
     }
-   
+
     imageStore(outputImage, pixelCoord, O);
 }

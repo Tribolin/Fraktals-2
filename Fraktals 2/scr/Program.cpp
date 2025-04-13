@@ -186,6 +186,7 @@ void Julia4D::render()
 	int height;
 	int width;
 	glfwGetWindowSize(window, &width, &height);
+	glViewport(0, 0, width, height);
 	static float c1  = -0.5;
 	static float c2 = 0.5;
 	static float c3  = 0.5;

@@ -89,7 +89,6 @@
     <None Include="res\shaders\ray_marching_test.shader" />
     <None Include="res\shaders\Julia4D.shader" />
     <None Include="res\shaders\Wormhole.shader" />
-    <None Include="..\..\..\..\AppData\Local\Temp\ultradetaillierte-nebel-abstrakte-tapete-4_1562-749.avif" />
     <None Include="res\shaders\orbit.shader" />
     <None Include="res\shaders\Doppelspalt.shader" />
     <None Include="res\shaders\Orbital3D.shader" />
@@ -174,54 +173,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\textures\cherno.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\sky1.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\sky2.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\sky3.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox1\StarSkybox046.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox1\StarSkybox041.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox1\StarSkybox042.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox1\StarSkybox043.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox1\StarSkybox044.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox1\StarSkybox045.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox3\Back_Tex.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox3\Down_Tex.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox3\Front_Tex.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox3\Left_Tex.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox3\Right_Tex.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
-    <Image Include="res\textures\skybox3\Up_Tex.png">
-      <Filter>Ressourcendateien</Filter>
-    </Image>
     <Image Include="res\textures\skybox4\nx.png">
       <Filter>Ressourcendateien</Filter>
     </Image>

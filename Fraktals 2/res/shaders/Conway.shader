@@ -11,7 +11,7 @@ layout(local_size_x = 20, local_size_y = 20) in;
 
 uniform int Run;
 
-const float samplingDist = .5;
+const float samplingDist = 2;
 
 const ivec4 iv0 = ivec4(0);
 const ivec4 iv1 = ivec4(1);

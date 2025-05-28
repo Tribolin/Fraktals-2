@@ -63,7 +63,7 @@ void UI::Manager(int& currentProgramIndex)
 	{
 		ImGui::Begin("Program Selection");
 
-		const char* items[] = { "Mandelbrot", "Koch Schneeflocke", "Ray_marching_test", "Julia-4d","fluid-sim","Wormhole-sim","Orbital","Doppelspalt","Conway"};
+		const char* items[] = { "Mandelbrot", "Koch Snowflake", "Ray_marching_test", "Julia-4d","fluid-sim","Wormhole-sim","Orbital","Double-Slit","Lenia"};
 		static const char* current_item = NULL;
 
 		if (ImGui::BeginCombo("Program", items[currentProgramIndex]))

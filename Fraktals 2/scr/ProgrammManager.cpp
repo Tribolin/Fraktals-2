@@ -14,14 +14,14 @@ ProgrammManager::~ProgrammManager()
 
 bool ProgrammManager::run()
 {
-	static bool show_demo_window = true;
+	static bool show_demo_window = false;
 
 	while (!glfwWindowShouldClose(window))
 	{
 		renderer->Clear();
 		
 		ui->NewFrame();
-		ui->DemoWindow(show_demo_window);
+		//ui->DemoWindow(show_demo_window);
 
 		int lastProgamIndex = currentProgramIndex;
 

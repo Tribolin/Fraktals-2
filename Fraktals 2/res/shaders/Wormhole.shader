@@ -39,7 +39,7 @@ float B2;
 
 
 
-//Wormhole funktion
+//Wormhole function
 float LtoR(float l)
 {
 	float rho = 1;
@@ -60,6 +60,8 @@ float LtoDR(float l)
 	float x = 2*(abs(l)-a)/(pi*M);
 	return 2*atan(x)*sign(l)/pi;
 }
+
+//Quaternion multiplication
 vec4 multiplyQ(vec4 q1,vec4 q2)
 {
 	float r = q1.x;
@@ -153,52 +155,5 @@ void main()
 
 
 
-// vec2 uv = (2*v_TexCoord-iResulution.xy)/iResulution.x;
-// 	vec3 vel = normalize(vec3(-zoom,uv));
-	
 
-// 	// vec3 RotationVec = vec3(0,0,1);
-// 	// vec4 ToRotate = vec4(0,vel);
-// 	// vec4 RotationHelper1 = vec4(cos(angle),RotationVec*sin(angle));
-// 	// vec4 RotationHelper2 = vec4(cos(-1*angle),RotationVec*sin(-1*angle));
-// 	// vec4 mid = multiplyQ(RotationHelper1,ToRotate);
-// 	// vel = multiplyQ(mid,RotationHelper2).yzw;
-	
-	
-//     vec2 beta = normalize(vel.yz);
-
-// 	float l = CamLenght;
-// 	float r = LtoR(l);
-// 	float dl = 1;
-// 	float H = r* length(vel.yz);
-// 	float phi = 0;
-
-// 	float dr;
-
-// 	int steps = 0;
-// 	while(abs(l) < max(abs(CamLenght)*2,a+2) && steps < maxSteps)
-// 	{
-// 		dr = LtoDR(l);
-// 		r = LtoR(l);
-// 		l+= dl*dt;
-// 		phi += H/r/r*dt;
-// 		dl += H*H*dr/r/r/r*dt;
-// 		steps++;
-// 	}
-	
-// 	float dx = dl*dr*cos(phi)-H/r*sin(phi);
-// 	float dy = dl*dr*sin(phi)+H/r*cos(phi);
-
-// 	vec3 vec = normalize(vec3( dx,dy*beta));
-// 	vec3 CubeVec = vec3(-vec.x,vec.z,-vec.y);
-
-// 	if(l > 0.)
-// 	{
-// 		color = texture(Texture1,CubeVec);
-// 	}
-// 	else
-// 	{
-		
-// 		color = texture(Texture2,CubeVec);
-// 	}
 	
